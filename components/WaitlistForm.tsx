@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import emailjs from '@emailjs/browser'
 
 const WaitlistForm = () => {
   const [formData, setFormData] = useState({
@@ -8,14 +9,47 @@ const WaitlistForm = () => {
     email: '',
     role: '',
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    // Inicializar EmailJS
+    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '')
+  }, [])
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the data to your backend
-    console.log('Form submitted:', formData)
-    // Reset form
-    setFormData({ name: '', email: '', role: '' })
-    alert('¡Gracias por unirte a la lista de espera! Nos pondremos en contacto pronto.')
+    setIsSubmitting(true)
+    
+    try {
+      const templateParams = {
+        to_email: 'medirecordsai@gmail.com',
+        from_name: formData.name,
+        from_email: formData.email,
+        role: formData.role,
+        message: `
+Nuevo registro en la lista de espera:
+
+Nombre: ${formData.name}
+Email: ${formData.email}
+Rol: ${formData.role}
+        `.trim()
+      }
+
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
+        templateParams
+      )
+
+      // Reset form
+      setFormData({ name: '', email: '', role: '' })
+      alert('¡Gracias por unirte a la lista de espera! Nos pondremos en contacto pronto.')
+    } catch (error) {
+      console.error('Error al enviar el correo:', error)
+      alert('Hubo un error al enviar tu información. Por favor, intenta nuevamente.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -27,7 +61,7 @@ const WaitlistForm = () => {
   }
 
   return (
-    <section className="py-20 bg-blue-600">
+    <section id="waitlist" className="py-32 bg-blue-600">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center text-white">
           <h2 className="text-4xl font-bold mb-4">Únete a la lista de espera</h2>
@@ -43,6 +77,7 @@ const WaitlistForm = () => {
                 placeholder="Tu nombre"
                 required
                 className="w-full px-4 py-2 rounded-lg text-gray-900"
+                disabled={isSubmitting}
               />
             </div>
             <div>
@@ -54,6 +89,7 @@ const WaitlistForm = () => {
                 placeholder="Tu correo electrónico"
                 required
                 className="w-full px-4 py-2 rounded-lg text-gray-900"
+                disabled={isSubmitting}
               />
             </div>
             <div>
@@ -63,19 +99,21 @@ const WaitlistForm = () => {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 rounded-lg text-gray-900"
+                disabled={isSubmitting}
               >
                 <option value="">Selecciona tu rol</option>
                 <option value="doctor">Doctor</option>
-                <option value="nurse">Enfermero/a</option>
-                <option value="admin">Administrador médico</option>
-                <option value="other">Otro profesional de la salud</option>
+                <option value="patient">Paciente</option>
+                <option value="medical_admin">Administrador médico</option>
+                <option value="other_health">Otro profesional de la salud</option>
               </select>
             </div>
             <button
               type="submit"
-              className="w-full bg-white text-blue-600 font-semibold py-2 px-6 rounded-lg hover:bg-gray-100 transition-colors"
+              className="w-full bg-white text-blue-600 font-semibold py-2 px-6 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
             >
-              Unirme a la lista de espera
+              {isSubmitting ? 'Enviando...' : 'Unirme a la lista de espera'}
             </button>
           </form>
         </div>
