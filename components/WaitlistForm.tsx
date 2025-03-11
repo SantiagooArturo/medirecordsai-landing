@@ -1,67 +1,35 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import emailjs from '@emailjs/browser'
 
 const WaitlistForm = () => {
+  const formRef = useRef<HTMLFormElement>(null)
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    role: '',
+    user_name: '',
+    user_email: '',
+    user_role: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  useEffect(() => {
-    // Inicializar EmailJS
-    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
-    if (publicKey) {
-      emailjs.init(publicKey)
-    }
-  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     
     try {
-      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
-      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID
+      if (!formRef.current) return
 
-      if (!serviceId || !templateId) {
-        throw new Error('Faltan las credenciales de EmailJS')
-      }
-
-      const templateParams = {
-        to_email: 'medirecordsai@gmail.com',
-        from_name: formData.name,
-        from_email: formData.email,
-        role: formData.role,
-        message: `
-Nuevo registro en la lista de espera:
-
-Nombre: ${formData.name}
-Email: ${formData.email}
-Rol: ${formData.role}
-        `.trim()
-      }
-
-      console.log('Enviando email con params:', {
-        serviceId,
-        templateId,
-        hasPublicKey: !!process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
-        templateParams
-      })
-
-      const response = await emailjs.send(
-        serviceId,
-        templateId,
-        templateParams
+      const result = await emailjs.sendForm(
+        'service_tak5hya',
+        'template_gvbmr7h',
+        formRef.current,
+        'IxLTO8jLjRWeSLYCR'
       )
 
-      console.log('Email enviado exitosamente:', response)
+      console.log('Email enviado exitosamente:', result.text)
 
       // Reset form
-      setFormData({ name: '', email: '', role: '' })
+      setFormData({ user_name: '', user_email: '', user_role: '' })
       alert('¡Gracias por unirte a la lista de espera! Nos pondremos en contacto pronto.')
     } catch (error) {
       console.error('Error detallado al enviar el correo:', error)
@@ -86,12 +54,12 @@ Rol: ${formData.role}
           <h2 className="text-4xl font-bold mb-4">Únete a la lista de espera</h2>
           <p className="mb-8">Sé de los primeros en experimentar el futuro de la gestión de registros médicos.</p>
           
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
             <div>
               <input
                 type="text"
-                name="name"
-                value={formData.name}
+                name="user_name"
+                value={formData.user_name}
                 onChange={handleChange}
                 placeholder="Tu nombre"
                 required
@@ -102,8 +70,8 @@ Rol: ${formData.role}
             <div>
               <input
                 type="email"
-                name="email"
-                value={formData.email}
+                name="user_email"
+                value={formData.user_email}
                 onChange={handleChange}
                 placeholder="Tu correo electrónico"
                 required
@@ -113,8 +81,8 @@ Rol: ${formData.role}
             </div>
             <div>
               <select
-                name="role"
-                value={formData.role}
+                name="user_role"
+                value={formData.user_role}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 rounded-lg text-gray-900"
