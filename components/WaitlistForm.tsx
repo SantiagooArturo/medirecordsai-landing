@@ -13,7 +13,10 @@ const WaitlistForm = () => {
 
   useEffect(() => {
     // Inicializar EmailJS
-    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || '')
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+    if (publicKey) {
+      emailjs.init(publicKey)
+    }
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,6 +24,13 @@ const WaitlistForm = () => {
     setIsSubmitting(true)
     
     try {
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID
+
+      if (!serviceId || !templateId) {
+        throw new Error('Faltan las credenciales de EmailJS')
+      }
+
       const templateParams = {
         to_email: 'medirecordsai@gmail.com',
         from_name: formData.name,
@@ -35,17 +45,26 @@ Rol: ${formData.role}
         `.trim()
       }
 
-      await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
+      console.log('Enviando email con params:', {
+        serviceId,
+        templateId,
+        hasPublicKey: !!process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
+        templateParams
+      })
+
+      const response = await emailjs.send(
+        serviceId,
+        templateId,
         templateParams
       )
+
+      console.log('Email enviado exitosamente:', response)
 
       // Reset form
       setFormData({ name: '', email: '', role: '' })
       alert('¡Gracias por unirte a la lista de espera! Nos pondremos en contacto pronto.')
     } catch (error) {
-      console.error('Error al enviar el correo:', error)
+      console.error('Error detallado al enviar el correo:', error)
       alert('Hubo un error al enviar tu información. Por favor, intenta nuevamente.')
     } finally {
       setIsSubmitting(false)
