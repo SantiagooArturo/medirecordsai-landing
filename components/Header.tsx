@@ -21,7 +21,7 @@ const Header = () => {
           className="text-2xl font-bold cursor-pointer" 
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
-          MediRecords AI
+          VitalDum AI
         </div>
         <div className="hidden md:flex space-x-6">
           <a href="#benefits" onClick={(e) => scrollToSection(e, 'benefits')} className="hover:text-blue-600">Beneficios</a>

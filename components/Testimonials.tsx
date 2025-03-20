@@ -17,7 +17,7 @@ const Testimonials = () => {
     {
       name: "Dr. Carlos Mendoza",
       role: "Médico Internista",
-      quote: "Con MediRecords AI, mis pacientes llegan a consulta con su historial completo y organizado. Esto me permite dar un mejor diagnóstico y seguimiento.",
+      quote: "Con VitalDum AI, mis pacientes llegan a consulta con su historial completo y organizado. Esto me permite dar un mejor diagnóstico y seguimiento.",
       image: "https://randomuser.me/api/portraits/men/3.jpg"
     }
   ]

@@ -9,7 +9,7 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "Medirecords AI",
+  title: "VitalDum AI",
   description: "Tu historial médico digital, seguro y accesible.",
 }
 

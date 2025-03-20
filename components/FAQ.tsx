@@ -10,7 +10,7 @@ const FAQ = () => {
     },
     {
       question: "¿Qué pasa si cambio de médico o clínica?",
-      answer: "Con MediRecords AI puedes compartir tu historial médico completo con cualquier doctor en segundos. Generamos un resumen PDF organizado que incluye tus exámenes, diagnósticos y tratamientos anteriores, facilitando la continuidad de tu atención médica."
+      answer: "Con VitalDum AI puedes compartir tu historial médico completo con cualquier doctor en segundos. Generamos un resumen PDF organizado que incluye tus exámenes, diagnósticos y tratamientos anteriores, facilitando la continuidad de tu atención médica."
     },
     {
       question: "¿Cómo me ayuda con mis medicamentos?",
